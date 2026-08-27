@@ -1,15 +1,15 @@
-pkgname=sddm-theme-artemisii-moon-eclipse
-pkgver=0.1.0
+pkgname=sddm-theme-snow-crash
+pkgver=0.2.0
 pkgrel=1
-pkgdesc='Minimal static SDDM theme with an Artemis II lunar eclipse background'
+pkgdesc='Minimal static SDDM theme with the Snow Crash wallpaper'
 arch=('any')
 url=''
-license=('custom')
+license=('MIT')
 depends=('sddm')
-source=("artemisii-moon-eclipse-sddm.tar.gz")
+source=("snow-crash-sddm.tar.gz")
 sha256sums=('SKIP')
 
 package() {
-  install -dm755 "$pkgdir/usr/share/sddm/themes/artemisii-moon-eclipse"
-  cp -r "$srcdir/artemisii-moon-eclipse-sddm/." "$pkgdir/usr/share/sddm/themes/artemisii-moon-eclipse/"
+  install -dm755 "$pkgdir/usr/share/sddm/themes/snow-crash"
+  cp -r "$srcdir/snow-crash-sddm/." "$pkgdir/usr/share/sddm/themes/snow-crash/"
 }

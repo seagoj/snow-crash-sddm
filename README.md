@@ -1,46 +1,31 @@
-# Artemis II Moon Eclipse SDDM theme
+# Snow Crash SDDM theme
 
-A minimal static SDDM theme for Plasma/SDDM, built around a dark lunar-eclipse image.
+A minimal static SDDM theme for Plasma/SDDM, built around the "Snow Crash" wallpaper by TehAnon.
+
+This theme is a fork of [an original SDDM theme by Jason Sackett](https://www.opendesktop.org/p/2355277) — the login UI is the same Qt 6 layout, with only the bundled artwork and theme identity changed. See `LICENSE` for upstream attribution.
 
 ## Files
 
 - `Main.qml`: main theme layout and login UI
 - `metadata.desktop`: SDDM theme metadata
 - `theme.conf`: editable defaults
-- `background.jpg`: background artwork
-- `preview.png`: preview image for theme pickers / store listings
+- `snow-crash.png`: bundled wallpaper
+- `preview.png`: preview image for theme pickers / store listings (identical to `snow-crash.png`)
 - `PKGBUILD`: simple Arch/CachyOS package recipe
+- `LICENSE`: MIT license text covering the theme code
 
 ## Local install
 
-### easy install from zip:
-
-For CachyOS: Direct link in store (free): 
-
-https://www.opendesktop.org/p/2355277
-
-The download button on the store does not seem to work right now, but you can click on the source or homepage link from there, and download the zip (or clone it), 
-and put it in the /usr/share/sddm/themes folder
-Unzip with something like:
-
-`sudo unzip artemisii-moon-eclipse-sddm-main.zip -d /usr/share/sddm/themes/`
-
-Then go into (system-)settings->colors&themes and select the new 'artemisii...' theme, hit apply, logout, and you will see it. It does not change lock screen.
-
-I just tested this whole loop fresh from site and it works.
-
-### regular install
-
 ```bash
-sudo mkdir -p /usr/share/sddm/themes/artemisii-moon-eclipse
-sudo cp -r ./* /usr/share/sddm/themes/artemisii-moon-eclipse/
+sudo mkdir -p /usr/share/sddm/themes/snow-crash
+sudo cp -r ./* /usr/share/sddm/themes/snow-crash/
 ```
 
 Then select it in System Settings > Colors & Themes > Login Screen (SDDM), or set:
 
 ```ini
 [Theme]
-Current=artemisii-moon-eclipse
+Current=snow-crash
 ```
 
 in `/etc/sddm.conf`.
@@ -59,17 +44,21 @@ sddm-greeter --test-mode --theme "$PWD"
 
 ## Build the package
 
-Put `PKGBUILD` and `artemisii-moon-eclipse-sddm.tar.gz` in the same directory, then run:
+Put `PKGBUILD` and `snow-crash-sddm.tar.gz` in the same directory, then run:
 
 ```bash
 makepkg -si
 ```
 
-## Licenses
+## Wallpaper attribution
 
-```
-Code license: MIT
-Background image: NASA imagery. Not owned by this theme author and not relicensed here.
-Source attribution: NASA
-Use of the included NASA image remains subject to NASA Media Usage Guidelines.
-```
+- **Image**: "Snow Crash" — Original Content by [TehAnon](https://www.reddit.com/user/TehAnon/)
+- **Source post**: [r/wallpapers, 2013-10-29](https://www.reddit.com/r/wallpapers/comments/1pfzqp/snow_crash_1920x1080_oc/)
+- **Original file**: <https://i.imgur.com/AkibqqB.png>
+- **License**: Posted as [OC] on Reddit (i.e. shared with permission to redistribute with attribution)
+
+The image bundled in this theme is byte-for-byte equivalent to the source (PNG, 1920×1200). The bundled copy is preserved at original quality; the local file in `~/Projects/nix-config/main/assets/wallpapers/snow-crash.png` is the canonical copy on this machine.
+
+## Theme code license
+
+The theme code (`Main.qml`, `theme.conf`, `metadata.desktop`, `PKGBUILD`) is MIT licensed. See [`LICENSE`](./LICENSE) for the full text. The original theme code is Copyright (c) 2014 Jason Sackett; modifications for the Snow Crash fork are Copyright (c) 2026 Jeremy.
