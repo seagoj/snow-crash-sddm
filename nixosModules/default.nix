@@ -188,14 +188,22 @@ in
         (pkgs.snow-crash-sddm.override { themeConfig = themeConfigAttrset; })
       ];
     };
-  };
 
-  # Surface a configuration smell: enabling the theme without enabling
-  # SDDM itself is almost certainly a misconfiguration. Warn (not throw)
-  # so the user can still evaluate the system during bring-up.
-  warnings = lib.optional (cfg.enable && !config.services.displayManager.sddm.enable) ''
-    services.displayManager.sddm.snow-crash.enable is true but
-    services.displayManager.sddm.enable is false. The Snow Crash theme
-    will not be active until SDDM itself is enabled.
-  '';
+    # Surface a configuration smell: enabling the theme without enabling
+    # SDDM itself is almost certainly a misconfiguration. Warn (not throw)
+    # so the user can still evaluate the system during bring-up.
+    # NOTE: this attribute MUST live inside `config`, not at the
+    # top level of the module — the NixOS module system rejects
+    # top-level `warnings` with `error: Module ... has an
+    # unsupported attribute 'warnings'. This is caused by
+    # introducing a top-level 'config' or 'options' attribute.`
+    # See https://github.com/NixOS/nixpkgs/issues — captured in the
+    # snow-crash-sddm change log when this was fixed during the
+    # nix-config consumption follow-up.
+    warnings = lib.optional (cfg.enable && !config.services.displayManager.sddm.enable) ''
+      services.displayManager.sddm.snow-crash.enable is true but
+      services.displayManager.sddm.enable is false. The Snow Crash theme
+      will not be active until SDDM itself is enabled.
+    '';
+  };
 }
