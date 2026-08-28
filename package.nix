@@ -26,12 +26,32 @@
 let
   isAttrs = themeConfig != null;
   iniFormat = formats.ini { };
+  # The repo root contains both the theme assets and the Nix packaging
+  # files (flake.nix, package.nix, nixosModules/, openspec/, flake.lock).
+  # The SDDM theme directory must not contain any of the packaging
+  # files — filter them out at the source level so `cp -r $src` only
+  # ships theme assets. lib.cleanSource adds the VCS filter on top.
+  filteredSrc = lib.cleanSourceWith {
+    src = ./.;
+    filter = path: type:
+      let baseName = baseNameOf (toString path); in
+      !(builtins.elem baseName [
+        "flake.nix"
+        "flake.lock"
+        "package.nix"
+        "nixosModules"
+        "openspec"
+        ".direnv"
+        "result"
+        "result-"
+      ]);
+  };
 in
 stdenvNoCC.mkDerivation {
   pname = "snow-crash-sddm";
   version = "0.2.0";
 
-  src = ./.;
+  src = filteredSrc;
 
   dontConfigure = true;
   dontBuild = true;
