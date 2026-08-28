@@ -4,14 +4,27 @@
 #
 # Exposes 21 typed options under `services.displayManager.sddm.snow-crash.*`
 # — one per `theme.conf` and `theme.conf.user` key. When enabled, builds
-# the theme package with the module's options passed as `themeConfig` and
-# adds it to `services.displayManager.sddm.extraPackages`.
+# the theme package with the module's options passed as `themeConfig`
+# and adds it to BOTH:
+#   - `services.displayManager.sddm.extraPackages` (SDDM wrapper
+#     runtime closure — QML plugin / Qt runtime propagation)
+#   - `environment.systemPackages` (the path NixOS symlinks into
+#     `/run/current-system/sw/share/sddm/themes/` via the SDDM
+#     module's `pathsToLink = [ "/share/sddm" ]` — this is the
+#     mechanism by which SDDM's `ThemeDir` resolution actually
+#     finds the theme directory)
+#
+# Both entries share a single overridden derivation (`themePkg`)
+# so the customized `theme.conf` is reachable from whichever path
+# SDDM consults at runtime.
 #
 # The `theme` option is set with `lib.mkDefault` so an explicit user-set
 # theme name still wins.
 #
 # See `openspec/changes/add-nix-flake/design.md` for the rationale
-# behind each option's type and the nixpkgs convention comparison.
+# behind each option's type and the nixpkgs convention comparison, and
+# `openspec/changes/fix-theme-systempath/design.md` for the rationale
+# behind the dual `extraPackages` + `systemPackages` wiring.
 { config, lib, pkgs, ... }:
 
 let
@@ -45,6 +58,16 @@ let
       type             = cfg.type;
     };
   };
+  # Single shared overridden derivation: passed to both
+  # `services.displayManager.sddm.extraPackages` (SDDM wrapper
+  # runtime closure) and `environment.systemPackages` (system path
+  # from which SDDM's `ThemeDir` resolution actually finds the
+  # theme directory). Both entries MUST point at the same
+  # derivation so the customized `theme.conf` is reachable from
+  # whichever path SDDM uses. See
+  # `openspec/changes/fix-theme-systempath/design.md` for the
+  # rationale behind the dual wiring.
+  themePkg = pkgs.snow-crash-sddm.override { themeConfig = themeConfigAttrset; };
 in
 {
   options.services.displayManager.sddm.snow-crash = {
@@ -182,12 +205,27 @@ in
     services.displayManager.sddm = {
       # mkDefault so an explicit user-set theme name still wins.
       theme = lib.mkDefault "snow-crash";
-      # Bring the theme directory into the SDDM runtime closure so
-      # ThemeDir resolution finds it under `/run/current-system/sw/share/sddm/themes`.
-      extraPackages = [
-        (pkgs.snow-crash-sddm.override { themeConfig = themeConfigAttrset; })
-      ];
+      # Bring the theme package into the SDDM wrapper's runtime closure.
+      # The nixpkgs SDDM wrapper (`pkgs/kdePackages/sddm`) consumes
+      # `extraPackages` as `buildInputs` for QML plugin / Qt runtime
+      # propagation — the wrapper's `$out` is a symlink-farm of
+      # `sddm-unwrapped`, so this does NOT put the theme directory
+      # into `/run/current-system/sw/share/sddm/themes/`. See the
+      # `environment.systemPackages` entry below for the actual
+      # mechanism that surfaces the theme directory.
+      extraPackages = [ themePkg ];
     };
+
+    # Surface the theme directory at `/run/current-system/sw/share/sddm/themes/snow-crash/`.
+    # NixOS's SDDM module (`nixos/modules/services/display-managers/sddm.nix`)
+    # sets `environment.pathsToLink = [ "/share/sddm" ]`, which symlinks
+    # `share/sddm` from every `environment.systemPackages` entry into
+    # the system closure — but NOT from `services.displayManager.sddm.extraPackages`,
+    # whose entries go into the SDDM wrapper's runtime closure only.
+    # Without this entry the greeter silently falls back to the bundled
+    # sddm-unwrapped themes (`elarun`/`maldives`/`maya`) even though
+    # `sddm.conf.d/00-nixos.conf` correctly says `Current=snow-crash`.
+    environment.systemPackages = [ themePkg ];
 
     # Surface a configuration smell: enabling the theme without enabling
     # SDDM itself is almost certainly a misconfiguration. Warn (not throw)
