@@ -31,9 +31,9 @@
 
 ## 5. Verification
 
-- [ ] 5.1 Run `nix flake check` from the repo root and confirm zero errors on `x86_64-linux` and `aarch64-linux`
-- [ ] 5.2 Run `nix build .#default` and confirm the output contains `share/sddm/themes/snow-crash/{Main.qml,metadata.desktop,theme.conf,theme.conf.user,snow-crash.png,preview.png,LICENSE,README.md}`
-- [ ] 5.3 Inspect the built `theme.conf` and confirm it is valid INI with all 21 keys under `[General]` (alphabetical ordering and float precision are expected and harmless per the spike evidence)
-- [ ] 5.4 Run `sddm-greeter-qt6 --test-mode --theme "$(nix build .#default --print-out-paths)/share/sddm/themes/snow-crash"` and confirm via `strace -e openat` that `metadata.desktop`, `theme.conf`, `theme.conf.user`, and `Main.qml` open without errors
-- [ ] 5.5 Build with `nix build .#default --override-input nixpkgs github:nixos/nixpkgs/nixos-unstable` to confirm the flake input is wired correctly
-- [ ] 5.6 Run `openspec validate add-nix-flake` from the repo root and confirm the change validates (proposal, design, tasks, spec delta all consistent)
+- [x] 5.1 Run `nix flake check` from the repo root and confirm zero errors on `x86_64-linux` and `aarch64-linux`
+- [x] 5.2 Run `nix build .#default` and confirm the output contains `share/sddm/themes/snow-crash/{Main.qml,metadata.desktop,theme.conf,theme.conf.user,snow-crash.png,preview.png,LICENSE,README.md}`
+- [x] 5.3 Inspect the built `theme.conf` and confirm it is valid INI with all 21 keys under `[General]` (alphabetical ordering and float precision are expected and harmless per the spike evidence)
+- [x] 5.4 Run `sddm-greeter-qt6 --test-mode --theme "$(nix build .#default --print-out-paths)/share/sddm/themes/snow-crash"` and confirm via `strace -e openat` that `metadata.desktop`, `theme.conf`, `theme.conf.user`, and `Main.qml` open without errors
+- [x] 5.5 Build with `nix build .#default --override-input nixpkgs github:nixos/nixpkgs/nixos-unstable` to confirm the flake input is wired correctly
+- [x] 5.6 Run `openspec validate add-nix-flake` from the repo root and confirm the change validates (proposal, design, tasks, spec delta all consistent)
